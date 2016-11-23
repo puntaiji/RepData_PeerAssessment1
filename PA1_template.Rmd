@@ -7,16 +7,35 @@ output:
 
 
 ## Loading and preprocessing the data
-
+```{r load_data, echo=TRUE}
+act <- read.csv(unz("activity.zip","activity.csv") )
+act$date <- as.Date(act$date)
+summary(act)
+str(act)
+```
 
 
 ## What is mean total number of steps taken per day?
+```{r steps_per_day, echo=TRUE}
+act_day <- aggregate( steps ~ date  , data = act ,FUN = "sum",na.rm= TRUE)
+act_day_mean <- formatC(mean(act_day$steps),format = "f",digits  = 2,big.mark = ",")
+act_day_median <- formatC(median(act_day$steps),format = "f", digits = 2, big.mark = ",")
+hist(act_day$steps,breaks = 10, main = "Histogram of total number of steps taken per day", 
+     xlab = "steps per day")
+```
 
-
+Mean of total number of steps is **`r act_day_mean`**.
+Median of total number of steps is **`r act_day_median`**. 
 
 ## What is the average daily activity pattern?
-
-
+```{r steps_interval, echo=TRUE}
+act_interval <- aggregate( steps ~ interval  , data = act ,FUN = "mean")
+act_interval_max <- act_interval[act_interval$steps == max(act_interval$steps),]$interval
+plot(act_interval$interval, act_interval$steps,type = "l",
+     xlab = "5-minute interval",ylab = "Average number of steps taken, averaged across all days", 
+     main = "Average number of steps taken,\naveraged across all days of 5-minute interval")
+```
+5-minute interval with maximun number of average step across all days is  **`r act_interval_max`**.
 
 ## Imputing missing values
 
