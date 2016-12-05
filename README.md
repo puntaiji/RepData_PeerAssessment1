@@ -1,6 +1,7 @@
 ## Assignment
 
-File: 
+File:  
+
 1. ***PA1_template.Rmd*** is code for knit2html to generate md and html file.  
 2. ***PA1_template.md*** is md file for report.  
 3. ***PA1_template.html*** is html file for report.  
