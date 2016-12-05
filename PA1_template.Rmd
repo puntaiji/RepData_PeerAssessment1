@@ -10,35 +10,69 @@ output:
 ```{r load_data, echo=TRUE}
 act <- read.csv(unz("activity.zip","activity.csv") )
 act$date <- as.Date(act$date)
-summary(act)
-str(act)
 ```
 
 
 ## What is mean total number of steps taken per day?
 ```{r steps_per_day, echo=TRUE}
 act_day <- aggregate( steps ~ date  , data = act ,FUN = "sum",na.rm= TRUE)
-act_day_mean <- formatC(mean(act_day$steps),format = "f",digits  = 2,big.mark = ",")
-act_day_median <- formatC(median(act_day$steps),format = "f", digits = 2, big.mark = ",")
-hist(act_day$steps,breaks = 10, main = "Histogram of total number of steps taken per day", 
+hist(act_day$steps,breaks = 50, main = "Histogram of total number of steps taken per day", 
      xlab = "steps per day")
 ```
 
-Mean of total number of steps is **`r act_day_mean`**.
-Median of total number of steps is **`r act_day_median`**. 
+Mean of total number of steps is **`r formatC(mean(act_day$steps),format = "f",digits  = 2,big.mark = ",")`**.
+Median of total number of steps is **`r formatC(median(act_day$steps),format = "f", digits = 2, big.mark = ",")`**. 
 
 ## What is the average daily activity pattern?
 ```{r steps_interval, echo=TRUE}
 act_interval <- aggregate( steps ~ interval  , data = act ,FUN = "mean")
-act_interval_max <- act_interval[act_interval$steps == max(act_interval$steps),]$interval
 plot(act_interval$interval, act_interval$steps,type = "l",
      xlab = "5-minute interval",ylab = "Average number of steps taken, averaged across all days", 
      main = "Average number of steps taken,\naveraged across all days of 5-minute interval")
-```
-5-minute interval with maximun number of average step across all days is  **`r act_interval_max`**.
+```  
+
+5-minute interval with maximun number of average step across all days is  **`r act_interval[act_interval$steps == max(act_interval$steps),]$interval`**.
 
 ## Imputing missing values
 
+Total number of rows with NAs is **`r nrow(act[is.na(act$steps),])`**.  
+Filling the missing value in dataset with ***mean of each 5-minute interval***by the code belows, because there are all NAs on some day.
 
+```{r imput_na, echo=TRUE}
+act_nafilled <- act
+
+for(interval in unique(act_nafilled$interval)){
+  act_nafilled[ is.na(act_nafilled[,1]) & act_nafilled[,3]==interval,1] <- 
+    mean(act_nafilled[act_nafilled[,3]==interval,1],na.rm = TRUE)
+}
+
+
+act_nona_day <- aggregate( steps ~ date  , data = act_nafilled ,FUN = "sum")
+hist(act_nona_day$steps,breaks = 50, main = "Histogram of total number of steps taken per day (with filling NAs)",xlab = "steps per day")
+
+```
+
+Mean of total number of steps is **`r formatC(mean(act_nona_day$steps),format = "f",digits  = 2,big.mark = ",")`**.
+Median of total number of steps is **`r formatC(median(act_nona_day$steps),format = "f", digits = 2, big.mark = ",")`**. 
+From this filling strategy, imputing missing data impact on ***median value***. Median of total number of steps is adjusted to equal mean value.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r weekday_end_diff, echo=TRUE}
+act_nafilled$weekday <- "weekday"
+#เสาร์ อาทิตย์ is Thai weekends.
+act_nafilled[ weekdays(act_nafilled$date) %in% c("เสาร์","อาทิตย์"),]$weekday <- "weekend"
+act_nafilled$weekday <- as.factor(act_nafilled$weekday)
+
+act_nafilled_avg <- aggregate( steps ~ interval + weekday   , data = act_nafilled ,FUN = "mean",na.rm= TRUE)
+
+library(lattice) 
+xyplot(steps~interval|weekday, 
+   data = act_nafilled_avg,
+   layout = c(1,2),
+   xlab="Interval", ylab="Number of steps",
+   type="l",
+   main="Activity patterns between weekdays and weekends") 
+
+```
+
+Activity in weekends is lower than weekdays, except activity, around interval 800, is higher.

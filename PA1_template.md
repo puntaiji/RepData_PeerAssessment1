@@ -64,6 +64,7 @@ From this filling strategy, imputing missing data impact on ***median value***. 
 
 ```r
 act_nafilled$weekday <- "weekday"
+#เสาร์ อาทิตย์ is Thai weekends.
 act_nafilled[ weekdays(act_nafilled$date) %in% c("เสาร์","อาทิตย์"),]$weekday <- "weekend"
 act_nafilled$weekday <- as.factor(act_nafilled$weekday)
 

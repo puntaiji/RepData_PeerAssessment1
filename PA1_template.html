@@ -162,6 +162,7 @@ hist(act_nona_day$steps,breaks = 50, main = &quot;Histogram of total number of s
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 <pre class="r"><code>act_nafilled$weekday &lt;- &quot;weekday&quot;
+#เสาร์ อาทิตย์ is Thai weekends.
 act_nafilled[ weekdays(act_nafilled$date) %in% c(&quot;เสาร์&quot;,&quot;อาทิตย์&quot;),]$weekday &lt;- &quot;weekend&quot;
 act_nafilled$weekday &lt;- as.factor(act_nafilled$weekday)
 
