@@ -76,7 +76,7 @@ xyplot(steps~interval|weekday,
    layout = c(1,2),
    xlab="Interval", ylab="Number of steps",
    type="l",
-   main="Activity patterns between weekdays and weekends") 
+   main="Activity patterns between weekdays and weekends" ) 
 ```
 
 ![](PA1_template_files/figure-html/weekday_end_diff-1.png)<!-- -->
